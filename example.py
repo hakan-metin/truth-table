@@ -6,8 +6,9 @@
 
 # Create a truth table for defined tests
 
-import itertools
-from tabulate import tabulate
+from truthtable import Model
+
+# Functions
 
 def eq(a, b):
         return (a and b) or (not a and not b)
@@ -21,23 +22,22 @@ def lt(a, b):
 def implies(a, b):
         return not a or b
 
+# Formulas
+
 def a_le_b(*args):
+	a, b, c = args
 	return le(a, b)
 
 def a_eq_b_implie_b_le_c(*args):
+	a, b, c = args
 	return implies(a == b, le(b, c))
 
+def a_lt_b_implie_b_le_c(*args):
+	a, b, c = args
+	return implies(lt(a, b), le(b, c))
+
 def mininal(*args):
-        return a_le_b(a, b, c) and a_eq_b_implie_b_le_c(a, b, c)
+	return a_le_b(*args) and a_eq_b_implie_b_le_c(*args) and a_lt_b_implie_b_le_c(*args)
 
-Bool = [False, True]
-tests = [a_le_b, a_eq_b_implie_b_le_c, mininal]
-headers = ['a', 'b', 'c'] + [t.__name__ for t in tests]
-
-res = []
-for a, b, c in itertools.product(Bool, Bool, Bool):
-	tmp = [a, b, c]
-	for test in tests:
-		tmp.append(test(a,b,c))
-	res.append(tmp)
-print(tabulate(res, headers=headers))
+formulas = [a_le_b, a_eq_b_implie_b_le_c, a_lt_b_implie_b_le_c, mininal]
+print(Model(3,formulas))
